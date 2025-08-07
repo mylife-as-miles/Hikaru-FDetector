@@ -107,10 +107,11 @@ function App() {
           console.log('PWA: Permissions API not available, testing with getUserMedia...');
           
           try {
-            if (!navigator.mediaDevices?.getUserMedia) {
+            const nav = navigator as Navigator;
+            if (!nav.mediaDevices?.getUserMedia) {
               throw new Error('getUserMedia not supported');
             }
-            const stream = await navigator.mediaDevices.getUserMedia({ 
+            const stream = await nav.mediaDevices.getUserMedia({ 
               video: true, 
               audio: false 
             });
