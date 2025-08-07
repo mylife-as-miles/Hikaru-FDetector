@@ -148,7 +148,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </div>
 
         {/* Title */}
-        <h1 ref={titleRef} className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-tight px-2">
+        <h1 ref={titleRef} className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-tight px-2 text-enhanced-contrast text-responsive-hero">
           AI Vision
           <br />
           <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
@@ -157,26 +157,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </h1>
 
         {/* Subtitle */}
-        <p ref={subtitleRef} className="text-base sm:text-xl md:text-2xl text-zinc-300 max-w-xs sm:max-w-3xl mb-6 sm:mb-8 leading-relaxed px-4">
-          Advanced <span className="text-blue-400 font-semibold">face detection</span> and{' '}
-          <span className="text-green-400 font-semibold">fruit classification</span> powered by{' '}
-          <span className="text-purple-400 font-semibold">Google Gemini Vision</span>
+        <p ref={subtitleRef} className="text-base sm:text-xl md:text-2xl text-zinc-200 max-w-xs sm:max-w-3xl mb-6 sm:mb-8 leading-relaxed px-4 text-enhanced-contrast text-responsive-subtitle">
+          Advanced <span className="text-blue-300 font-semibold">face detection</span> and{' '}
+          <span className="text-green-300 font-semibold">fruit classification</span> powered by{' '}
+          <span className="text-purple-300 font-semibold">Google Gemini Vision</span>
         </p>
 
         {/* CTA Buttons */}
         <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 px-4">
           <button
             onClick={onGetStarted}
-            className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105 shadow-2xl text-sm sm:text-base"
+            className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-semibold transition-all duration-300 shadow-2xl text-sm sm:text-base button-enhanced"
           >
             <span className="flex items-center justify-center space-x-2">
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity -z-10"></div>
           </button>
           
-          <button className="group px-6 sm:px-8 py-3 sm:py-4 bg-zinc-900/60 hover:bg-zinc-800/60 backdrop-blur-xl border border-zinc-700/60 hover:border-zinc-600 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base">
+          <button className="group px-6 sm:px-8 py-3 sm:py-4 backdrop-enhanced bg-zinc-900/70 hover:bg-zinc-800/70 border border-zinc-700/70 hover:border-zinc-600 text-white rounded-2xl font-semibold transition-all duration-300 text-sm sm:text-base button-enhanced">
             <span className="flex items-center justify-center space-x-2">
               <Play className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Watch Demo</span>
@@ -189,29 +189,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="p-3 sm:p-4 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/60 rounded-xl text-center"
+              className="p-3 sm:p-4 backdrop-enhanced bg-zinc-900/60 border border-zinc-800/70 rounded-xl text-center"
             >
-              <div className="text-lg sm:text-2xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-xs sm:text-sm text-zinc-300">{stat.label}</div>
+              <div className="text-lg sm:text-2xl font-bold text-white mb-1 text-enhanced-contrast">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-zinc-200">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Scroll Indicator */}
         <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400" />
+          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-300" />
         </div>
       </section>
 
       {/* Features Section */}
-      <section ref={featuresRef} className="relative z-40 py-12 sm:py-20 px-4 sm:px-6">
+      <section ref={featuresRef} className="relative z-40 py-12 sm:py-20 px-4 sm:px-6 container-mobile sm:container-tablet">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-zinc-200 bg-clip-text text-transparent text-enhanced-contrast text-responsive-heading">
               Powerful Features
             </h2>
-            <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto px-4">
+            <p className="text-lg sm:text-xl text-zinc-200 max-w-2xl mx-auto px-4 text-enhanced-contrast">
               Built with cutting-edge AI technology for real-world applications
             </p>
           </div>
@@ -221,13 +221,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="group p-6 sm:p-8 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/60 hover:border-zinc-700/80 rounded-2xl transition-all duration-300 hover:scale-105"
+                className="group p-6 sm:p-8 backdrop-enhanced bg-zinc-900/60 border border-zinc-800/70 hover:border-zinc-700/90 rounded-2xl transition-all duration-300 button-enhanced"
               >
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform`}>
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform shadow-lg`}>
                   <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">{feature.title}</h3>
-                <p className="text-zinc-300 leading-relaxed text-sm sm:text-base">{feature.description}</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 text-enhanced-contrast">{feature.title}</h3>
+                <p className="text-zinc-200 leading-relaxed text-sm sm:text-base">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -235,9 +235,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </section>
 
       {/* Technology Section */}
-      <section className="relative z-40 py-12 sm:py-20 px-4 sm:px-6 bg-zinc-900/30">
+      <section className="relative z-40 py-12 sm:py-20 px-4 sm:px-6 bg-zinc-900/40 backdrop-enhanced">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-white to-zinc-200 bg-clip-text text-transparent text-enhanced-contrast">
             Powered by Modern Technology
           </h2>
           
@@ -248,9 +248,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               { name: "Gemini Vision", description: "Google AI API" },
               { name: "Tailwind CSS", description: "Utility-first styling" }
             ].map((tech, index) => (
-              <div key={index} className="p-4 sm:p-6 bg-zinc-900/60 backdrop-blur-xl border border-zinc-800/60 rounded-xl">
-                <div className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2">{tech.name}</div>
-                <div className="text-xs sm:text-sm text-zinc-300">{tech.description}</div>
+              <div key={index} className="p-4 sm:p-6 backdrop-enhanced bg-zinc-900/70 border border-zinc-800/70 rounded-xl button-enhanced">
+                <div className="text-base sm:text-lg font-semibold text-white mb-1 sm:mb-2 text-enhanced-contrast">{tech.name}</div>
+                <div className="text-xs sm:text-sm text-zinc-200">{tech.description}</div>
               </div>
             ))}
           </div>
@@ -260,51 +260,51 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       {/* CTA Section */}
       <section className="relative z-40 py-12 sm:py-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white to-zinc-200 bg-clip-text text-transparent text-enhanced-contrast text-responsive-heading">
             Ready to Start Detecting?
           </h2>
-          <p className="text-lg sm:text-xl text-zinc-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+          <p className="text-lg sm:text-xl text-zinc-200 mb-6 sm:mb-8 max-w-2xl mx-auto px-4 text-enhanced-contrast">
             Experience the power of AI-driven computer vision in your browser. No downloads, no setup required.
           </p>
           
           <button
             onClick={onGetStarted}
-            className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 hover:scale-105 shadow-2xl"
+            className="group relative px-8 sm:px-12 py-4 sm:py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-bold text-base sm:text-lg transition-all duration-300 shadow-2xl button-enhanced"
           >
             <span className="flex items-center justify-center space-x-2 sm:space-x-3">
               <Camera className="w-5 h-5 sm:w-6 sm:h-6" />
               <span>Launch Hikaru-FDetector</span>
               <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-50 group-hover:opacity-70 transition-opacity -z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity -z-10"></div>
           </button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative z-40 py-8 sm:py-12 px-4 sm:px-6 border-t border-zinc-800/60">
+      <footer className="relative z-40 py-8 sm:py-12 px-4 sm:px-6 border-t border-zinc-800/70 backdrop-enhanced bg-zinc-900/50 safe-area-bottom">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
               <Camera className="w-3 h-3 sm:w-5 sm:h-5 text-white" />
             </div>
-            <span className="text-base sm:text-lg font-bold text-white">Hikaru-FDetector</span>
+            <span className="text-base sm:text-lg font-bold text-white text-enhanced-contrast">Hikaru-FDetector</span>
           </div>
-          <p className="text-zinc-400 mb-3 sm:mb-4 text-sm sm:text-base">
+          <p className="text-zinc-300 mb-3 sm:mb-4 text-sm sm:text-base">
             Advanced AI vision detection for modern applications
           </p>
           <div className="flex items-center justify-center space-x-4 sm:space-x-6">
-            <a href="#" className="text-zinc-400 hover:text-white transition-colors text-sm sm:text-base">
+            <a href="#" className="text-zinc-300 hover:text-white transition-colors text-sm sm:text-base">
               Privacy
             </a>
-            <a href="#" className="text-zinc-400 hover:text-white transition-colors text-sm sm:text-base">
+            <a href="#" className="text-zinc-300 hover:text-white transition-colors text-sm sm:text-base">
               Terms
             </a>
             <a 
               href="https://github.com/mylife-as-miles/Hikaru-FDetector" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-zinc-400 hover:text-white transition-colors text-sm sm:text-base"
+              className="text-zinc-300 hover:text-white transition-colors text-sm sm:text-base"
             >
               GitHub
             </a>
