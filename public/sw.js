@@ -1,6 +1,6 @@
-const CACHE_NAME = 'cameraapp-v1.0.0';
-const STATIC_CACHE = 'cameraapp-static-v1.0.0';
-const DYNAMIC_CACHE = 'cameraapp-dynamic-v1.0.0';
+const CACHE_NAME = 'hikaru-fdetector-v1.0.0';
+const STATIC_CACHE = 'hikaru-fdetector-static-v1.0.0';
+const DYNAMIC_CACHE = 'hikaru-fdetector-dynamic-v1.0.0';
 
 // Files to cache immediately
 const STATIC_ASSETS = [
@@ -167,7 +167,7 @@ self.addEventListener('push', (event) => {
   console.log('Service Worker: Push notification received');
   
   const options = {
-    body: event.data ? event.data.text() : 'New notification from CameraApp',
+    body: event.data ? event.data.text() : 'New notification from Hikaru-FDetector',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-72x72.png',
     vibrate: [100, 50, 100],
@@ -190,7 +190,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('CameraApp', options)
+    self.registration.showNotification('Hikaru-FDetector', options)
   );
 });
 

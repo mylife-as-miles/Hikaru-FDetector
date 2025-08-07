@@ -44,7 +44,7 @@ export const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
           await navigator.share({
             files: [file],
             title: 'Download Image',
-            text: `Image from CameraApp`
+            text: `Image from Hikaru-FDetector`
           });
           return;
         }
@@ -120,7 +120,7 @@ export const MediaPreviewModal: React.FC<MediaPreviewModalProps> = ({
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             files: [file],
-            title: 'Shared from CameraApp',
+            title: 'Shared from Hikaru-FDetector',
             text: `Check out this ${media.type === 'photo' ? 'photo' : 'video'} I captured!`
           });
           return;

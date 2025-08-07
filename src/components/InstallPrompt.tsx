@@ -68,7 +68,7 @@ export const InstallPrompt: React.FC<InstallPromptProps> = ({ onClose }) => {
           
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-semibold text-white mb-1">
-              Install CameraApp
+              Install Hikaru-FDetector
             </h3>
             <p className="text-xs text-zinc-400 mb-3">
               Add to your home screen for quick access and offline use

@@ -236,7 +236,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
             <div ref={logoRef} className="text-white">
               <img 
                 src="/white_circle_360x360.png" 
-                alt="CameraApp Logo" 
+                alt="Hikaru-FDetector Logo" 
                 className="h-32 w-32 drop-shadow-lg" 
               />
             </div>
@@ -245,7 +245,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
 
         {/* Title */}
         <h1 ref={titleRef} className="text-4xl font-bold text-white mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent font-sans">
-          Web Camera Kit
+          Hikaru-FDetector
         </h1>
 
         {/* Subtitle */}

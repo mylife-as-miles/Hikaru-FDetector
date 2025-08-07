@@ -1,16 +1,22 @@
-# Web Camera Kit 📸
+# Hikaru-FDetector 🎯
 
-A **lightweight, mobile-optimized camera boilerplate** designed for AI vision and computer vision projects. Built with React, TypeScript, and modern web APIs.
+An **advanced face detection application** powered by AI and computer vision technology. Built with React, TypeScript, and modern web APIs for real-time face recognition and analysis.
 
 ## 🚀 Live Demo
 
-**[Learn More On Product Site](https://camera-kit.netlify.app)**
+**[Learn More On Product Site](https://hikaru-fdetector.netlify.app)**
 
-**[Live Demo](https://web-camera-kit-demo.netlify.app/)**
+**[Live Demo](https://hikaru-fdetector-demo.netlify.app/)**
 
 <img src="./public/demo1.gif" alt="Example" width="700" />
 
 ## ✨ Key Features
+
+### 🎯 **AI-Powered Face Detection**
+- Real-time face recognition and tracking
+- Advanced facial analysis with ML models
+- Multiple face detection algorithms
+- Robust performance across different lighting conditions
 
 ### 📱 **Mobile-First Design**
 - Responsive interface optimized for mobile and desktop
@@ -41,10 +47,10 @@ A **lightweight, mobile-optimized camera boilerplate** designed for AI vision an
 
 ## 🎯 Perfect For
 
-- **AI Vision Projects** - Ready-to-use camera input for ML models
-- **Computer Vision Applications** - Real-time video processing
-- **Educational Tools** - Clean codebase for learning
-- **Prototyping** - Quick setup for camera-based proof of concepts
+- **Face Recognition Projects** - Ready-to-use face detection for security applications
+- **AI Vision Applications** - Real-time facial analysis and tracking
+- **Educational Tools** - Clean codebase for learning computer vision
+- **Prototyping** - Quick setup for face detection proof of concepts
 
 ## 🛠️ Tech Stack
 
@@ -60,8 +66,8 @@ A **lightweight, mobile-optimized camera boilerplate** designed for AI vision an
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/web-camera-kit.git
-cd web-camera-kit
+git clone https://github.com/yourusername/hikaru-fdetector.git
+cd hikaru-fdetector
 
 # Install dependencies
 npm install

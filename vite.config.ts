@@ -13,9 +13,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'icons/*.png'],
       manifest: {
-        name: 'Web Camera Kit',
-        short_name: 'Web Camera Kit', 
-        description: 'A lightweight, mobile-optimized camera boilerplate for AI and computer vision projects',
+        name: 'Hikaru-FDetector',
+        short_name: 'Hikaru-FDetector', 
+        description: 'Advanced face detection application with AI-powered recognition capabilities',
         theme_color: '#1f2937',
         background_color: '#09090b',
         display: 'standalone',

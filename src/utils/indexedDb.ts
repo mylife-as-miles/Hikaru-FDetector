@@ -12,7 +12,7 @@ export interface StoredMediaData {
 }
 
 export class MediaDatabase {
-  private dbName = 'CameraAppMedia';
+  private dbName = 'HikaruFDetectorMedia';
   private dbVersion = 1;
   private storeName = 'media';
   private db: IDBDatabase | null = null;
