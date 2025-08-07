@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Camera } from 'lucide-react';
 import { gsap } from 'gsap';
 import { LoadingScreen } from './components/LoadingScreen';
+import { LandingPage } from './components/LandingPage';
 import { CameraPreview } from './components/CameraPreview';
 import { MediaGallery } from './components/MediaGallery';
 import { MediaPreviewModal } from './components/MediaPreviewModal';
@@ -43,6 +44,7 @@ function App() {
   const [initialPermissionChecked, setInitialPermissionChecked] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
   const [selectedMediaForPreview, setSelectedMediaForPreview] = useState<CapturedMedia | null>(null);
+  const [showLandingPage, setShowLandingPage] = useState(true);
   const mainContentRef = useRef<HTMLDivElement>(null);
   
   // Check if loading screen is disabled via environment variable
@@ -197,6 +199,15 @@ function App() {
   const handlePermissionDenied = () => {
     setPermissionState('denied');
   };
+
+  // Show landing page first
+  if (showLandingPage) {
+    return (
+      <LandingPage 
+        onGetStarted={() => setShowLandingPage(false)}
+      />
+    );
+  }
 
   // Show loading screen until permission is checked and granted
   if ((!initialPermissionChecked || permissionState === 'loading') && !isLoadingScreenDisabled) {
