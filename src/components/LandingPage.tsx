@@ -99,38 +99,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 overflow-x-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-cyan-400/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-[32rem] h-[32rem] bg-gradient-to-l from-purple-500/15 to-indigo-400/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-teal-400/12 to-blue-600/8 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-3/4 left-1/6 w-64 h-64 bg-gradient-to-tr from-cyan-300/10 to-blue-400/5 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+      <div className="fixed inset-0 opacity-60">
+        <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-gradient-to-r from-blue-500/40 to-cyan-400/25 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-96 sm:w-[32rem] h-96 sm:h-[32rem] bg-gradient-to-l from-purple-500/30 to-indigo-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 sm:w-80 h-64 sm:h-80 bg-gradient-to-br from-teal-400/25 to-blue-600/18 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-3/4 left-1/6 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-tr from-cyan-300/20 to-blue-400/12 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 flex items-center justify-between p-6 backdrop-blur-xl bg-zinc-900/50 border-b border-zinc-800/50">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <Camera className="w-6 h-6 text-white" />
+      <nav className="relative z-50 flex items-center justify-between p-4 sm:p-6 backdrop-blur-xl bg-zinc-900/80 border-b border-zinc-800/60">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <Camera className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
             Hikaru-FDetector
           </span>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <a
             href="https://github.com/mylife-as-miles/Hikaru-FDetector"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-400 hover:text-white transition-all"
+            className="p-2 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-300 hover:text-white transition-all"
           >
-            <Github className="w-5 h-5" />
+            <Github className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
           <button
             onClick={onGetStarted}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105"
+            className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 text-sm sm:text-base"
           >
             Launch App
           </button>
@@ -138,17 +138,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative z-40 flex flex-col items-center justify-center min-h-[80vh] px-6 text-center">
+      <section ref={heroRef} className="relative z-40 flex flex-col items-center justify-center min-h-[85vh] sm:min-h-[80vh] px-4 sm:px-6 text-center">
         {/* Logo */}
-        <div ref={logoRef} className="relative mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-full blur-2xl opacity-40 scale-110"></div>
-          <div className="relative w-32 h-32 bg-gradient-to-br from-zinc-800 via-zinc-700 to-zinc-900 rounded-full flex items-center justify-center shadow-2xl border border-zinc-600/30">
-            <Eye className="w-16 h-16 text-blue-400" />
+        <div ref={logoRef} className="relative mb-6 sm:mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-zinc-700/60 to-zinc-600/60 rounded-full blur-2xl opacity-60 scale-110"></div>
+          <div className="relative w-24 h-24 sm:w-32 sm:h-32 bg-gradient-to-br from-zinc-800 via-zinc-700 to-zinc-900 rounded-full flex items-center justify-center shadow-2xl border border-zinc-600/40">
+            <Eye className="w-12 h-12 sm:w-16 sm:h-16 text-blue-400" />
           </div>
         </div>
 
         {/* Title */}
-        <h1 ref={titleRef} className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-tight">
+        <h1 ref={titleRef} className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-white via-blue-100 to-blue-200 bg-clip-text text-transparent leading-tight px-2">
           AI Vision
           <br />
           <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
@@ -157,49 +157,49 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
         </h1>
 
         {/* Subtitle */}
-        <p ref={subtitleRef} className="text-xl md:text-2xl text-zinc-400 max-w-3xl mb-8 leading-relaxed">
+        <p ref={subtitleRef} className="text-base sm:text-xl md:text-2xl text-zinc-300 max-w-xs sm:max-w-3xl mb-6 sm:mb-8 leading-relaxed px-4">
           Advanced <span className="text-blue-400 font-semibold">face detection</span> and{' '}
           <span className="text-green-400 font-semibold">fruit classification</span> powered by{' '}
           <span className="text-purple-400 font-semibold">Google Gemini Vision</span>
         </p>
 
         {/* CTA Buttons */}
-        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 mb-12">
+        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12 px-4">
           <button
             onClick={onGetStarted}
-            className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105 shadow-2xl"
+            className="group relative px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105 shadow-2xl text-sm sm:text-base"
           >
-            <span className="flex items-center space-x-2">
+            <span className="flex items-center justify-center space-x-2">
               <span>Get Started</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
             </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity -z-10"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity -z-10"></div>
           </button>
           
-          <button className="group px-8 py-4 bg-zinc-900/50 hover:bg-zinc-800/50 backdrop-blur-xl border border-zinc-700 hover:border-zinc-600 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105">
-            <span className="flex items-center space-x-2">
-              <Play className="w-5 h-5" />
+          <button className="group px-6 sm:px-8 py-3 sm:py-4 bg-zinc-900/60 hover:bg-zinc-800/60 backdrop-blur-xl border border-zinc-700/60 hover:border-zinc-600 text-white rounded-2xl font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base">
+            <span className="flex items-center justify-center space-x-2">
+              <Play className="w-4 h-4 sm:w-5 sm:h-5" />
               <span>Watch Demo</span>
             </span>
           </button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 max-w-xs sm:max-w-2xl px-4">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="p-4 bg-zinc-900/30 backdrop-blur-xl border border-zinc-800 rounded-xl text-center"
+              className="p-3 sm:p-4 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/60 rounded-xl text-center"
             >
-              <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-              <div className="text-sm text-zinc-400">{stat.label}</div>
+              <div className="text-lg sm:text-2xl font-bold text-white mb-1">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-zinc-300">{stat.label}</div>
             </div>
           ))}
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-zinc-500" />
+        <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400" />
         </div>
       </section>
 
