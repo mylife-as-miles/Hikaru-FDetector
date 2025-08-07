@@ -50,7 +50,7 @@ export const useMediaCapture = () => {
         }
       });
     };
-  }, []);
+  }, [capturedMedia]);
 
   const addMedia = useCallback(async (media: CapturedMedia) => {
     try {
@@ -174,7 +174,7 @@ export const useMediaCapture = () => {
       console.error('Blob download failed, using fallback:', error);
       downloadMedia(media);
     }
-  }, []);
+  }, [downloadMedia]);
 
   const createMediaFromBlob = useCallback((blob: Blob, type: CameraMode): CapturedMedia => {
     const id = `${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

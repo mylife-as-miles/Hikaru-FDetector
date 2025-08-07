@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, X, Play, Image as ImageIcon, Video, Trash2, Camera } from 'lucide-react';
+import { Download, Play, Image as ImageIcon, Video, Trash2, Camera } from 'lucide-react';
 import { CapturedMedia } from '../types/media';
 
 interface MediaGalleryProps {
@@ -162,7 +162,7 @@ const VideoThumbnail: React.FC<{
         URL.revokeObjectURL(thumbnailUrl);
       }
     };
-  }, [src, isMobile]);
+  }, [src, isMobile, thumbnailUrl]);
 
   // Cleanup thumbnail URL on unmount
   useEffect(() => {

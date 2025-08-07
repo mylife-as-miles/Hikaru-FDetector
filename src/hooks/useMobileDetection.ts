@@ -11,7 +11,7 @@ export const useMobileDetection = () => {
       // Check if running in standalone mode (PWA)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
       // Check for iOS Safari standalone mode
-      const isIOSStandalone = (window.navigator as any).standalone === true;
+      const isIOSStandalone = (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
       // Check if launched from home screen
       const isFromHomeScreen = window.location.search.includes('homescreen=1');
       

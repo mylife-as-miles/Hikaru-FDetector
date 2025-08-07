@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
 import Webcam from 'react-webcam';
 import { gsap } from 'gsap';
-import { Camera, Video, SwitchCamera, Download, X, Play, Pause, Image, ArrowLeft, Settings } from 'lucide-react';
+import { Camera, Video, SwitchCamera, Image } from 'lucide-react';
 import { useMobileDetection } from '../hooks/useMobileDetection';
 import { CameraMode, CameraFacing, CapturedMedia } from '../types/media';
 
@@ -43,7 +43,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
   const animationFrameRef = useRef<number | null>(null);
   
   const captureButtonRef = useRef<HTMLDivElement>(null);
-  const modeSelectorRef = useRef<HTMLDivElement>(null);
   const switchCameraIconRef = useRef<SVGSVGElement>(null);
   
   const [isReady, setIsReady] = useState(false);
@@ -106,7 +105,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
 
       getVideoDevices();
     }
-  }, [isMobile, selectedDeviceId]);
+  }, [isMobile, selectedDeviceId, setSelectedDeviceId]);
 
   // Calculate video constraints with optimized settings
   const getVideoConstraints = useCallback(() => {

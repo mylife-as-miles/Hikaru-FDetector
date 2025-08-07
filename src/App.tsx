@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRef } from 'react';
-import { Camera, Image, Settings, Info, ArrowLeft } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import { gsap } from 'gsap';
 import { LoadingScreen } from './components/LoadingScreen';
 import { CameraPreview } from './components/CameraPreview';
@@ -67,7 +67,6 @@ function App() {
   const {
     capturedMedia,
     isCapturing,
-    isLoading,
     setIsCapturing,
     addMedia,
     removeMedia,
@@ -120,7 +119,7 @@ function App() {
             
           } catch (error) {
             // Permission might be denied or need prompting
-            const errorName = (error as any)?.name;
+            const errorName = (error as Error)?.name;
             if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
               setPermissionState('denied');
             } else {
