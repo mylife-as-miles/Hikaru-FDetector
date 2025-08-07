@@ -109,12 +109,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 flex items-center justify-between p-4 sm:p-6 backdrop-blur-xl bg-zinc-900/80 border-b border-zinc-800/60">
+      <nav className="relative z-50 flex items-center justify-between p-4 sm:p-6 backdrop-enhanced bg-zinc-900/90 border-b border-zinc-800/70 safe-area-top">
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
             <Camera className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
           </div>
-          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent text-enhanced-contrast">
             Hikaru-FDetector
           </span>
         </div>
@@ -124,13 +124,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             href="https://github.com/mylife-as-miles/Hikaru-FDetector"
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 rounded-lg bg-zinc-800/60 hover:bg-zinc-700/60 text-zinc-300 hover:text-white transition-all"
+            className="p-2 rounded-lg bg-zinc-800/70 hover:bg-zinc-700/70 text-zinc-200 hover:text-white transition-all button-enhanced"
           >
             <Github className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
           <button
             onClick={onGetStarted}
-            className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 text-sm sm:text-base"
+            className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all text-sm sm:text-base button-enhanced"
           >
             Launch App
           </button>
