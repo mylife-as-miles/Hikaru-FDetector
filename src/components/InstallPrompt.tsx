@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, X, Smartphone } from 'lucide-react';
+import { Download, X } from 'lucide-react';
 import { pwaManager } from '../utils/pwa';
 
 interface InstallPromptProps {

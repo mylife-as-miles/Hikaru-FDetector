@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Camera, Zap, Shield, Sparkles } from 'lucide-react';
+import { Camera } from 'lucide-react';
 
 interface LoadingScreenProps {
   onPermissionGranted: () => void;

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Download, X, Trash2, Share2, ArrowLeft } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Download, X, Trash2, ArrowLeft } from 'lucide-react';
 import { useMobileDetection } from '../hooks/useMobileDetection';
 import { CapturedMedia } from '../types/media';
 
