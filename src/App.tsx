@@ -245,7 +245,7 @@ function App() {
 
   return (
     <div 
-      className={`text-gray-100 ${isMobile ? 'flex flex-col' : ''} ${currentView === 'gallery' ? 'overflow-auto' : 'overflow-hidden'}`} 
+      className={`text-gray-100 ${isMobile ? 'flex flex-col' : ''}`}
       style={{ 
         height: isMobile ? viewportHeight : 'auto', 
         minHeight: isMobile ? 'auto' : '100vh',
