@@ -4,6 +4,7 @@ import { gsap } from 'gsap';
 import { Camera, Video, SwitchCamera, Image } from 'lucide-react';
 import { useMobileDetection } from '../hooks/useMobileDetection';
 import { CameraMode, CameraFacing, CapturedMedia } from '../types/media';
+import { FruitDetection } from './FruitDetection';
 
 interface CameraPreviewProps {
   mode: CameraMode;
@@ -57,6 +58,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
   const transitionOverlayRef = useRef<HTMLDivElement>(null);
   const [showInitialLoadOverlay, setShowInitialLoadOverlay] = useState(true);
   const initialLoadOverlayRef = useRef<HTMLDivElement>(null);
+  const [isFruitDetectionActive, setIsFruitDetectionActive] = useState(false);
 
   const { isMobile, isMobileUserAgent, isMobileScreen } = useMobileDetection();
 
@@ -656,6 +658,14 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
             aspectRatio: '16/9'
           }}
           mirrored={isMobile ? facing === 'user' : true}
+        />
+
+        {/* Fruit Detection Overlay */}
+        <FruitDetection
+          videoRef={{ current: webcamRef.current?.video || null }}
+          isActive={isFruitDetectionActive}
+          onToggle={() => setIsFruitDetectionActive(!isFruitDetectionActive)}
+          className="absolute inset-0"
         />
 
         {/* Initial Load Overlay - Shows on first camera load and view switches */}

@@ -18,6 +18,12 @@ An **advanced face detection application** powered by AI and computer vision tec
 - Multiple face detection algorithms
 - Robust performance across different lighting conditions
 
+### 🍎 **AI-Powered Fruit Detection**
+- Real-time fruit identification using Google Gemini Vision
+- Automatic bounding box detection for detected fruits
+- Confidence scoring for each detection
+- Support for various fruit types with high accuracy
+
 ### 📱 **Mobile-First Design**
 - Responsive interface optimized for mobile and desktop
 - PWA capabilities with offline support
@@ -48,9 +54,10 @@ An **advanced face detection application** powered by AI and computer vision tec
 ## 🎯 Perfect For
 
 - **Face Recognition Projects** - Ready-to-use face detection for security applications
+- **Fruit Detection & Classification** - AI-powered fruit identification for agriculture and food industry
 - **AI Vision Applications** - Real-time facial analysis and tracking
 - **Educational Tools** - Clean codebase for learning computer vision
-- **Prototyping** - Quick setup for face detection proof of concepts
+- **Prototyping** - Quick setup for AI detection proof of concepts
 
 ## 🛠️ Tech Stack
 
@@ -72,12 +79,27 @@ cd hikaru-fdetector
 # Install dependencies
 npm install
 
+# Set up environment variables
+cp .env.example .env
+# Edit .env and add your Gemini API key
+
 # Start development server
 npm run dev
 
 # Build for production
 npm run build
 ```
+
+## 🔑 API Setup
+
+### Gemini Vision API
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Add it to your `.env` file:
+   ```
+   VITE_GEMINI_API_KEY=your_api_key_here
+   ```
+4. The fruit detection feature will be automatically enabled
 
 ## 🚀 Deployment
 
