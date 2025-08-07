@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRef } from 'react';
 import { Camera } from 'lucide-react';
 import { gsap } from 'gsap';
@@ -9,7 +9,7 @@ import { MediaPreviewModal } from './components/MediaPreviewModal';
 import { InstallPrompt } from './components/InstallPrompt';
 import { useMediaCapture } from './hooks/useMediaCapture';
 import { useMobileDetection } from './hooks/useMobileDetection';
-import { CameraMode, CameraFacing } from './types/media';
+import { CameraMode, CameraFacing, CapturedMedia } from './types/media';
 
 type View = 'camera' | 'gallery' | 'settings';
 
@@ -44,7 +44,6 @@ function App() {
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
   const [selectedMediaForPreview, setSelectedMediaForPreview] = useState<CapturedMedia | null>(null);
   const mainContentRef = useRef<HTMLDivElement>(null);
-  const [shouldShowCameraOverlay, setShouldShowCameraOverlay] = useState(false);
   
   // Check if loading screen is disabled via environment variable
   const isLoadingScreenDisabled = import.meta.env.VITE_APP_DISABLE_LOADING_SCREEN === 'true';
@@ -108,13 +107,16 @@ function App() {
           console.log('PWA: Permissions API not available, testing with getUserMedia...');
           
           try {
+            if (!navigator.mediaDevices?.getUserMedia) {
+              throw new Error('getUserMedia not supported');
+            }
             const stream = await navigator.mediaDevices.getUserMedia({ 
               video: true, 
               audio: false 
             });
             
             // If we get here, permission is granted
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
             setPermissionState('granted');
             
           } catch (error) {
@@ -314,8 +316,6 @@ function App() {
                   onGalleryClick={() => setCurrentView('gallery')}
                   capturedMediaCount={capturedMedia.length}
                   isPWA={isPWA}
-                  shouldShowInitialOverlay={shouldShowCameraOverlay}
-                  onOverlayShown={() => setShouldShowCameraOverlay(false)}
                 />
               </div>
             </div>
@@ -335,7 +335,6 @@ function App() {
                 onMediaSelectForPreview={setSelectedMediaForPreview}
                 isMobile={isMobile}
                 onBackToCamera={() => {
-                  setShouldShowCameraOverlay(true);
                   setCurrentView('camera');
                 }}
               />
