@@ -1,12 +1,12 @@
 /**
  * Fruit Detection Utility using Gemini Vision API
  */
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 import { FruitDetectionResult, FruitDetectionError } from '../types/fruitDetection';
 
 export class FruitDetector {
   private genAI: GoogleGenerativeAI | null = null;
-  private model: any = null;
+  private model: GenerativeModel | null = null;
   private isInitialized = false;
 
   constructor(apiKey?: string) {

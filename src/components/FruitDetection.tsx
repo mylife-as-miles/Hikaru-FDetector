@@ -26,7 +26,6 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
   
   const {
     detectionResults,
-    status,
     error,
     isProcessing,
     detectFruits,
