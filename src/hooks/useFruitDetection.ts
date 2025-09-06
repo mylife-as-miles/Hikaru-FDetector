@@ -15,7 +15,7 @@ interface UseFruitDetectionReturn {
   status: DetectionStatus;
   error: string | null;
   isProcessing: boolean;
-  detectFruits: (base64Image: string) => Promise<void>;
+  detectFruits: (base64Image: string) => Promise<FruitDetectionResult | null>;
   initializeDetector: (apiKey: string) => void;
   clearResults: () => void;
   isDetectorReady: boolean;
@@ -65,15 +65,15 @@ export const useFruitDetection = (options: UseFruitDetectionOptions = {}): UseFr
   }, [processingInterval]);
   
   // Detect fruits in image
-  const detectFruits = useCallback(async (base64Image: string): Promise<void> => {
+  const detectFruits = useCallback(async (base64Image: string): Promise<FruitDetectionResult | null> => {
     if (!detectorRef.current || !detectorRef.current.isReady()) {
       setError('Detector not initialized. Please provide an API key.');
       setStatus('error');
-      return;
+      return null;
     }
     
     if (!shouldProcessFrame()) {
-      return; // Skip processing to avoid overwhelming the API
+      return null; // Skip processing to avoid overwhelming the API
     }
     
     setStatus('processing');
@@ -83,6 +83,7 @@ export const useFruitDetection = (options: UseFruitDetectionOptions = {}): UseFr
       const results = await detectorRef.current.detectFruits(base64Image);
       setDetectionResults(results);
       setStatus('success');
+      return results;
     } catch (err) {
       let errorMessage = 'Detection failed';
       
@@ -95,6 +96,7 @@ export const useFruitDetection = (options: UseFruitDetectionOptions = {}): UseFr
       setError(errorMessage);
       setStatus('error');
       setDetectionResults(null);
+      return null;
     }
   }, [shouldProcessFrame]);
   
