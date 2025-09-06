@@ -2,38 +2,45 @@
  * Fruit Detection Component with Overlay Visualization
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Eye, EyeOff, Settings, AlertCircle, Loader } from 'lucide-react';
-import { useFruitDetection } from '../hooks/useFruitDetection';
-import { DetectedFruit } from '../types/fruitDetection';
+import { Eye, EyeOff, Settings, AlertCircle, Loader, X } from 'lucide-react';
+import { FruitDetectionResult } from '../types/fruitDetection';
 
 interface FruitDetectionProps {
   videoRef?: React.RefObject<HTMLVideoElement>;
   isActive: boolean;
   onToggle: () => void;
   className?: string;
+  detectionResults: FruitDetectionResult | null;
+  error: string | null;
+  isProcessing: boolean;
+  detectFruits: (base64Image: string) => Promise<void>;
+  initializeDetector: (apiKey: string) => void;
+  clearResults: () => void;
+  isDetectorReady: boolean;
+  detailPopupResult: FruitDetectionResult | null;
+  onCloseDetailPopup: () => void;
 }
 
 export const FruitDetection: React.FC<FruitDetectionProps> = ({
   videoRef,
   isActive,
   onToggle,
-  className = ''
+  className = '',
+  detectionResults,
+  error,
+  isProcessing,
+  detectFruits,
+  initializeDetector,
+  clearResults,
+  isDetectorReady,
+  detailPopupResult,
+  onCloseDetailPopup
 }) => {
   const [apiKey, setApiKey] = useState<string>('');
   const [showSettings, setShowSettings] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const intervalRef = useRef<number | null>(null);
   
-  const {
-    detectionResults,
-    error,
-    isProcessing,
-    detectFruits,
-    initializeDetector,
-    clearResults,
-    isDetectorReady
-  } = useFruitDetection();
-
   // Get stored API key from localStorage on mount
   useEffect(() => {
     const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
@@ -58,7 +65,7 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
     }
   }, [apiKey, initializeDetector]);
 
-  // Capture frame from video and process
+  // Capture frame from video and process for real-time detection
   const captureAndDetect = useCallback(async () => {
     if (!videoRef?.current || !canvasRef.current || !isDetectorReady) {
       return;
@@ -86,7 +93,7 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
     await detectFruits(base64Image);
   }, [videoRef, isDetectorReady, detectFruits]);
 
-  // Start/stop detection loop
+  // Start/stop real-time detection loop
   useEffect(() => {
     if (isActive && isDetectorReady) {
       intervalRef.current = window.setInterval(captureAndDetect, 1000); // Every 1 second
@@ -105,49 +112,10 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
     };
   }, [isActive, isDetectorReady, captureAndDetect, clearResults]);
 
-  // Render bounding box overlay
-  const renderBoundingBoxes = () => {
-    if (!detectionResults?.fruits || !videoRef?.current) return null;
-
-    const video = videoRef.current;
-    const videoRect = video.getBoundingClientRect();
-
-    return detectionResults.fruits.map((fruit: DetectedFruit, index: number) => {
-      const { boundingBox, name, confidence } = fruit;
-      
-      // Convert normalized coordinates to pixel coordinates
-      const left = boundingBox.xmin * videoRect.width;
-      const top = boundingBox.ymin * videoRect.height;
-      const width = (boundingBox.xmax - boundingBox.xmin) * videoRect.width;
-      const height = (boundingBox.ymax - boundingBox.ymin) * videoRect.height;
-
-      return (
-        <div
-          key={index}
-          className="absolute border-2 border-green-400 bg-green-400/10 backdrop-blur-sm"
-          style={{
-            left: `${left}px`,
-            top: `${top}px`,
-            width: `${width}px`,
-            height: `${height}px`,
-            pointerEvents: 'none'
-          }}
-        >
-          <div className="absolute -top-8 left-0 bg-green-500 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-            {name} ({Math.round(confidence * 100)}%)
-          </div>
-        </div>
-      );
-    });
-  };
-
   return (
     <div className={`relative ${className}`}>
       {/* Hidden canvas for frame capture */}
       <canvas ref={canvasRef} className="hidden" />
-      
-      {/* Bounding box overlays */}
-      {isActive && renderBoundingBoxes()}
       
       {/* Control Panel */}
       <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
@@ -178,7 +146,7 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
         {/* Processing Indicator */}
         {isProcessing && (
-          <div className="p-3 rounded-full bg-blue-500/20 border border-blue-400 text-blue-400">
+          <div className="p-3 rounded-full bg-blue-500/20 border-blue-400 text-blue-400">
             <Loader size={20} className="animate-spin" />
           </div>
         )}
@@ -241,18 +209,54 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
         </div>
       )}
 
-      {/* Results Summary */}
+      {/* Real-time Detection Pop-up */}
       {isActive && detectionResults && detectionResults.fruits.length > 0 && (
-        <div className="absolute bottom-4 left-4 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700 rounded-xl p-3">
-          <div className="text-white text-sm font-semibold mb-2">
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-lg border border-zinc-700 rounded-xl p-4 w-11/12 max-w-md shadow-2xl">
+          <h3 className="text-white text-center font-bold mb-2">
             Detected Fruits ({detectionResults.fruits.length})
-          </div>
-          <div className="space-y-1">
+          </h3>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             {detectionResults.fruits.map((fruit, index) => (
-              <div key={index} className="text-xs text-zinc-300">
-                {fruit.name} - {Math.round(fruit.confidence * 100)}%
+              <div key={index} className="text-sm text-zinc-200 bg-zinc-800/50 p-2 rounded-lg text-center">
+                <span className="font-semibold capitalize">{fruit.name}</span>
+                <span className="text-xs text-zinc-400 ml-2">
+                  ({Math.round(fruit.confidence * 100)}%)
+                </span>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Detail Pop-up on Capture */}
+      {detailPopupResult && (
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-11/12 max-w-lg shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-white">Detection Results</h2>
+              <button
+                onClick={onCloseDetailPopup}
+                className="text-zinc-400 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            {detailPopupResult.fruits.length > 0 ? (
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+                {detailPopupResult.fruits.map((fruit, index) => (
+                  <div key={index} className="bg-zinc-800 p-4 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold capitalize text-white">{fruit.name}</span>
+                      <span className="text-sm font-medium text-green-400">
+                        {Math.round(fruit.confidence * 100)}% confidence
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-zinc-400 text-center py-8">No fruits detected in this photo.</p>
+            )}
           </div>
         </div>
       )}

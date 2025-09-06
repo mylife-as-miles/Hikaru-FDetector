@@ -1,18 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Camera } from 'lucide-react';
-import { gsap } from 'gsap';
 import { LoadingScreen } from './components/LoadingScreen';
 import { LandingPage } from './components/LandingPage';
 import { CameraPreview } from './components/CameraPreview';
-import { MediaGallery } from './components/MediaGallery';
-import { MediaPreviewModal } from './components/MediaPreviewModal';
+import { FruitDetection } from './components/FruitDetection';
 import { InstallPrompt } from './components/InstallPrompt';
-import { useMediaCapture } from './hooks/useMediaCapture';
 import { useMobileDetection } from './hooks/useMobileDetection';
-import { CameraMode, CameraFacing, CapturedMedia } from './types/media';
-
-type View = 'camera' | 'gallery' | 'settings';
+import { useFruitDetection } from './hooks/useFruitDetection';
+import { CameraFacing } from './types/media';
 
 function App() {
   const { isMobile, isMobileUserAgent, isMobileScreen, viewportHeight, isPWA } = useMobileDetection();
@@ -37,15 +32,11 @@ function App() {
     ? 'user' 
     : 'environment';
 
-  const [currentView, setCurrentView] = useState<View>('camera');
-  const [cameraMode, setCameraMode] = useState<CameraMode>('photo');
   const [cameraFacing, setCameraFacing] = useState<CameraFacing>(initialCameraFacing);
   const [permissionState, setPermissionState] = useState<'loading' | 'granted' | 'denied'>('loading');
   const [initialPermissionChecked, setInitialPermissionChecked] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>('');
-  const [selectedMediaForPreview, setSelectedMediaForPreview] = useState<CapturedMedia | null>(null);
   const [showLandingPage, setShowLandingPage] = useState(true);
-  const mainContentRef = useRef<HTMLDivElement>(null);
   
   // Check if loading screen is disabled via environment variable
   const isLoadingScreenDisabled = import.meta.env.VITE_APP_DISABLE_LOADING_SCREEN === 'true';
@@ -65,17 +56,11 @@ function App() {
     }
   }, [isInIframe, isMobileUserAgent, isMobileScreen, cameraFacing]);
   
-  const {
-    capturedMedia,
-    isCapturing,
-    setIsCapturing,
-    addMedia,
-    removeMedia,
-    clearAllMedia,
-    downloadMedia,
-    downloadMediaBlob,
-    createMediaFromBlob
-  } = useMediaCapture();
+  const [isCapturing, setIsCapturing] = useState(false);
+  const fruitDetection = useFruitDetection();
+  const [isFruitDetectionActive, setIsFruitDetectionActive] = useState(false);
+  const cameraRef = useRef<{ video: HTMLVideoElement | null }>(null);
+  const [detailPopupResult, setDetailPopupResult] = useState<any>(null);
 
   // Initial permission check - runs once when app mounts
   useEffect(() => {
@@ -144,25 +129,6 @@ function App() {
 
     checkInitialPermissions();
   }, []); // Run only once on mount
-  // Animate view transitions
-  useEffect(() => {
-    if (mainContentRef.current) {
-      gsap.fromTo(mainContentRef.current, 
-        { 
-          opacity: 0, 
-          y: 20,
-          scale: 0.98
-        },
-        { 
-          opacity: 1, 
-          y: 0,
-          scale: 1,
-          duration: 0.5, 
-          ease: "power2.out" 
-        }
-      );
-    }
-  }, [currentView]);
 
   // If loading screen is disabled, automatically request permissions
   useEffect(() => {
@@ -187,6 +153,16 @@ function App() {
       requestPermissions();
     }
   }, [isLoadingScreenDisabled, permissionState, isPWA, initialPermissionChecked]);
+
+  const handleCapture = async (blob: Blob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = async () => {
+      const base64data = reader.result as string;
+      await fruitDetection.detectFruits(base64data);
+      setDetailPopupResult(fruitDetection.detectionResults);
+    };
+  };
 
   const toggleCameraFacing = () => {
     setCameraFacing(prev => prev === 'user' ? 'environment' : 'user');
@@ -229,7 +205,7 @@ function App() {
           <Camera className="h-16 w-16 mx-auto mb-6 text-zinc-400" />
           <h1 className="text-2xl font-bold mb-4">Camera Access Required</h1>
           <p className="text-zinc-400 mb-6">
-            This app needs access to your camera and microphone to capture photos and videos. 
+            This app needs access to your camera to identify fruits.
             Please enable permissions in your browser settings and refresh the page.
           </p>
           <button
@@ -245,129 +221,42 @@ function App() {
 
   return (
     <div 
-      className={`text-gray-100 ${isMobile ? 'flex flex-col' : ''}`}
+      className={`text-gray-100 bg-zinc-950 ${isMobile ? 'flex flex-col' : ''}`}
       style={{ 
         height: isMobile ? viewportHeight : 'auto', 
         minHeight: isMobile ? 'auto' : '100vh',
-        background: !isMobile && (currentView === 'camera' || currentView === 'gallery')
-          ? `
-            radial-gradient(ellipse at 20% 80%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.10) 0%, transparent 50%),
-            radial-gradient(ellipse at 40% 40%, rgba(6, 182, 212, 0.06) 0%, transparent 50%),
-            linear-gradient(135deg, #0a0a0a 0%, #111111 25%, #0f0f0f 50%, #0d0d0d 75%, #0a0a0a 100%)
-          `
-          : '#09090b' // Default zinc-950 color for mobile and other views
       }}
     >
-      {/* Desktop Navigation - Fixed at top */}
-      {!isMobile && (
-        <div className="flex justify-center py-6 relative z-20">
-            <nav className="flex space-x-2 bg-zinc-900/80 rounded-2xl p-2 backdrop-blur-xl border border-zinc-700 shadow-lg">
-              <button
-                onClick={() => setCurrentView('camera')}
-                className={`px-6 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
-                  currentView === 'camera'
-                    ? 'bg-zinc-700 text-gray-100 shadow-lg'
-                    : 'text-zinc-400 hover:text-gray-100 hover:bg-zinc-800'
-                }`}
-              >
-                Camera
-              </button>
-              <button
-                onClick={() => setCurrentView('gallery')}
-                className={`px-6 py-3 rounded-xl transition-all duration-200 relative text-sm font-medium ${
-                  currentView === 'gallery'
-                    ? 'bg-zinc-700 text-gray-100 shadow-lg'
-                    : 'text-zinc-400 hover:text-gray-100 hover:bg-zinc-800'
-                }`}
-              >
-                Gallery
-                {capturedMedia.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#FF4D00] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium shadow-md">
-                    {capturedMedia.length}
-                  </span>
-                )}
-              </button>
-            </nav>
-        </div>
-      )}
-
       {/* Main Content */}
-      <main className={`${isMobile ? 'relative flex-1' : ''} ${
-        !isMobile ? (
-          currentView === 'camera' 
-            ? 'flex items-center justify-center min-h-[calc(100vh-120px)]' 
-            : 'pt-8 min-h-[calc(100vh-120px)]'
-        ) : ''
-      }`}>
+      <main className={`${isMobile ? 'relative flex-1' : 'flex items-center justify-center min-h-screen'}`}>
         <div className={`${isMobile ? 'h-full flex flex-col' : 'w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
-
-          {currentView === 'camera' && (
-            <div 
-              ref={mainContentRef}
-              key={currentView}
-              className={isMobile ? 'h-full flex flex-col' : 'h-full flex flex-col space-y-6'}
-            >
-              {/* Camera Preview */}
-              <div className={`${isMobile ? 'flex-1' : 'w-full'} ${
-                isMobile
-                  ? 'h-full' 
-                  : 'flex-grow'
-              }`}>
-                <CameraPreview
-                  mode={cameraMode}
-                  facing={cameraFacing}
-                  selectedDeviceId={selectedDeviceId}
-                  setSelectedDeviceId={setSelectedDeviceId}
-                  onCapture={addMedia}
-                  onModeChange={setCameraMode}
-                  onFacingChange={toggleCameraFacing}
-                  isCapturing={isCapturing}
-                  setIsCapturing={setIsCapturing}
-                  createMediaFromBlob={createMediaFromBlob}
-                  onGalleryClick={() => setCurrentView('gallery')}
-                  capturedMediaCount={capturedMedia.length}
-                  isPWA={isPWA}
-                />
-              </div>
-            </div>
-          )}
-
-          {currentView === 'gallery' && (
-            <div 
-              ref={mainContentRef}
-              key={currentView}
-              className={`${isMobile ? 'flex-1 overflow-y-auto px-4 py-4' : 'max-w-6xl mx-auto w-full'}`}
-            >
-              <MediaGallery
-                media={capturedMedia}
-                onDownload={downloadMedia}
-                onRemove={removeMedia}
-                onClearAll={clearAllMedia}
-                onMediaSelectForPreview={setSelectedMediaForPreview}
-                isMobile={isMobile}
-                onBackToCamera={() => {
-                  setCurrentView('camera');
-                }}
+          <div className="relative h-full flex flex-col space-y-6">
+            {/* Camera Preview */}
+            <div className={`${isMobile ? 'flex-1' : 'w-full'} ${isMobile ? 'h-full' : 'flex-grow'}`}>
+              <CameraPreview
+                facing={cameraFacing}
+                selectedDeviceId={selectedDeviceId}
+                setSelectedDeviceId={setSelectedDeviceId}
+                onCapture={handleCapture}
+                onFacingChange={toggleCameraFacing}
+                isCapturing={isCapturing}
+                setIsCapturing={setIsCapturing}
+                isPWA={isPWA}
+                ref={cameraRef}
               />
             </div>
-          )}
+            <FruitDetection
+              videoRef={cameraRef}
+              isActive={isFruitDetectionActive}
+              onToggle={() => setIsFruitDetectionActive(!isFruitDetectionActive)}
+              className="absolute inset-0"
+              {...fruitDetection}
+              detailPopupResult={detailPopupResult}
+              onCloseDetailPopup={() => setDetailPopupResult(null)}
+            />
+          </div>
         </div>
       </main>
-
-      {/* Preview Modal - Rendered at App level for proper full-screen positioning */}
-      {selectedMediaForPreview && (
-        <MediaPreviewModal
-          media={selectedMediaForPreview}
-          onClose={() => setSelectedMediaForPreview(null)}
-          onDownload={downloadMedia}
-          onDownloadBlob={downloadMediaBlob}
-          onRemove={(id) => {
-            removeMedia(id);
-            setSelectedMediaForPreview(null);
-          }}
-        />
-      )}
 
       {/* PWA Install Prompt */}
       <InstallPrompt />
