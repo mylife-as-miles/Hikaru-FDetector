@@ -1,55 +1,40 @@
-import React, { useRef, useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useCallback, useState, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import Webcam from 'react-webcam';
 import { gsap } from 'gsap';
-import { Camera, Video, SwitchCamera, Image } from 'lucide-react';
+import { Camera, SwitchCamera } from 'lucide-react';
 import { useMobileDetection } from '../hooks/useMobileDetection';
 import { CameraMode, CameraFacing, CapturedMedia } from '../types/media';
-import { FruitDetection } from './FruitDetection';
 
 interface CameraPreviewProps {
-  mode: CameraMode;
   facing: CameraFacing;
   selectedDeviceId: string;
   setSelectedDeviceId: (deviceId: string) => void;
-  onCapture: (media: CapturedMedia) => void;
-  onModeChange: (mode: CameraMode) => void;
+  onCapture: (blob: Blob) => void;
   onFacingChange: () => void;
   isCapturing: boolean;
   setIsCapturing: (capturing: boolean) => void;
-  createMediaFromBlob: (blob: Blob, type: CameraMode) => CapturedMedia;
-  onGalleryClick?: () => void;
-  capturedMediaCount?: number;
   isPWA?: boolean;
 }
 
-export const CameraPreview: React.FC<CameraPreviewProps> = ({
-  mode,
+export const CameraPreview = forwardRef<
+  { video: HTMLVideoElement | null },
+  CameraPreviewProps
+>(({
   facing,
   selectedDeviceId,
   setSelectedDeviceId,
   onCapture,
-  onModeChange,
   onFacingChange,
   isCapturing,
   setIsCapturing,
-  createMediaFromBlob,
-  onGalleryClick,
-  capturedMediaCount = 0,
   isPWA = false
-}) => {
+}, ref) => {
   const webcamRef = useRef<Webcam>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const processedStreamRef = useRef<MediaStream | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-  
-  const captureButtonRef = useRef<HTMLDivElement>(null);
   const switchCameraIconRef = useRef<SVGSVGElement>(null);
   
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
   const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
   const [retryCount, setRetryCount] = useState(0);
   const [isInitializing, setIsInitializing] = useState(false);
@@ -58,7 +43,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
   const transitionOverlayRef = useRef<HTMLDivElement>(null);
   const [showInitialLoadOverlay, setShowInitialLoadOverlay] = useState(true);
   const initialLoadOverlayRef = useRef<HTMLDivElement>(null);
-  const [isFruitDetectionActive, setIsFruitDetectionActive] = useState(false);
 
   const { isMobile, isMobileUserAgent, isMobileScreen } = useMobileDetection();
 
@@ -162,156 +146,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
   }, []);
   const videoConstraints = getVideoConstraints();
 
-  // Create canvas for real-time video processing
-  const createProcessingCanvas = useCallback((stream: MediaStream) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return null;
-
-    const video = document.createElement('video');
-    video.srcObject = stream;
-    video.playsInline = true;
-    video.muted = true;
-    
-    // Hide video element completely
-    video.style.position = 'absolute';
-    video.style.top = '-9999px';
-    video.style.left = '-9999px';
-    video.style.width = '1px';
-    video.style.height = '1px';
-    video.style.opacity = '0';
-    video.style.pointerEvents = 'none';
-    video.style.display = 'none';
-    video.style.visibility = 'hidden';
-
-    video.onloadedmetadata = () => {
-      const { videoWidth, videoHeight } = video;
-      
-      // Determine canvas dimensions based on device and orientation
-      if (isMobile) {
-        const isPortraitVideo = videoHeight > videoWidth;
-        const isLandscapeOrientation = window.innerWidth > window.innerHeight;
-        
-        if (isPortraitVideo && isLandscapeOrientation) {
-          canvas.width = videoHeight;
-          canvas.height = videoWidth;
-        } else {
-          canvas.width = videoWidth;
-          canvas.height = videoHeight;
-        }
-      } else {
-        canvas.width = videoWidth;
-        canvas.height = videoHeight;
-      }
-
-      // Start real-time processing
-      const processFrame = () => {
-        if (video.readyState >= 2) {
-          ctx.save();
-          
-          if (isMobile) {
-            const isPortraitVideo = videoHeight > videoWidth;
-            const isLandscapeOrientation = window.innerWidth > window.innerHeight;
-            
-            if (isPortraitVideo && isLandscapeOrientation) {
-              // Rotate for mobile landscape
-              ctx.translate(canvas.width / 2, canvas.height / 2);
-              ctx.rotate(Math.PI / 2);
-              ctx.drawImage(video, -videoWidth / 2, -videoHeight / 2, videoWidth, videoHeight);
-            } else {
-              // Mirror for front camera on mobile
-              if (facing === 'user') {
-                ctx.scale(-1, 1);
-                ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-              } else {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              }
-            }
-          } else {
-            // Desktop: always mirror
-            ctx.scale(-1, 1);
-            ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-          }
-          
-          ctx.restore();
-        }
-        
-        animationFrameRef.current = requestAnimationFrame(processFrame);
-      };
-
-      video.play();
-      processFrame();
-    };
-
-    canvasRef.current = canvas;
-    return canvas.captureStream(30); // 30 FPS processed stream
-  }, [isMobile, facing]);
-
-  // Initialize processed stream when mediaStream changes
-  useEffect(() => {
-    if (mediaStream && mode === 'video') {
-      const processedStream = createProcessingCanvas(mediaStream);
-      if (processedStream) {
-        processedStreamRef.current = processedStream;
-        
-        // Create MediaRecorder with optimized settings
-        try {
-          const options = isMobile 
-            ? { 
-                mimeType: 'video/webm;codecs=vp8',
-                videoBitsPerSecond: 2500000 // 2.5 Mbps for mobile
-              }
-            : { 
-                mimeType: 'video/webm;codecs=vp8',
-                videoBitsPerSecond: 10000000 // 10 Mbps for desktop
-              };
-
-          const mediaRecorder = new MediaRecorder(processedStream, options);
-          const chunks: Blob[] = [];
-
-          mediaRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-              chunks.push(event.data);
-            }
-          };
-
-          mediaRecorder.onstop = () => {
-            const videoBlob = new Blob(chunks, { type: 'video/webm' });
-            const media = createMediaFromBlob(videoBlob, 'video');
-            onCapture(media);
-            setIsRecording(false);
-            setIsCapturing(false);
-          };
-
-          mediaRecorder.onerror = (event) => {
-            console.error('MediaRecorder error:', event);
-            setError('Recording failed. Please try again.');
-            setIsRecording(false);
-            setIsCapturing(false);
-          };
-
-          mediaRecorderRef.current = mediaRecorder;
-        } catch (error) {
-          console.error('Failed to create MediaRecorder:', error);
-          setError('Recording not supported on this device.');
-        }
-      }
-    }
-
-    return () => {
-      // Cleanup
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (processedStreamRef.current) {
-        processedStreamRef.current.getTracks().forEach(track => track.stop());
-      }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-    };
-  }, [mediaStream, mode, isMobile, createProcessingCanvas, createMediaFromBlob, onCapture, setIsCapturing]);
-
   // Reset state when facing or mobile detection changes
   useEffect(() => {
     setShowInitialLoadOverlay(true);
@@ -319,19 +153,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
     setIsReady(false);
     setError(null);
     setMediaStream(null);
-    setIsRecording(false);
     setRetryCount(0);
-    
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-    if (processedStreamRef.current) {
-      processedStreamRef.current.getTracks().forEach(track => track.stop());
-    }
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop();
-    }
-    mediaRecorderRef.current = null;
   }, [facing, isMobile, selectedDeviceId]);
 
   // Show initial load overlay when component first mounts or when switching views
@@ -341,32 +163,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
       gsap.set(initialLoadOverlayRef.current, { opacity: 1 });
     }
   }, []); // Only on mount
-
-  const startRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'inactive') {
-      try {
-        mediaRecorderRef.current.start(1000); // Record in 1-second chunks
-        setIsRecording(true);
-        setIsCapturing(true);
-      } catch (error) {
-        console.error('Failed to start recording:', error);
-        setError('Failed to start recording.');
-      }
-    }
-  }, [setIsCapturing]);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      try {
-        mediaRecorderRef.current.stop();
-      } catch (error) {
-        console.error('Failed to stop recording:', error);
-        setError('Failed to stop recording.');
-        setIsRecording(false);
-        setIsCapturing(false);
-      }
-    }
-  }, [setIsCapturing]);
 
   const capturePhoto = useCallback(() => {
     if (!webcamRef.current) return;
@@ -379,8 +175,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
         fetch(imageSrc)
           .then(res => res.blob())
           .then(blob => {
-            const media = createMediaFromBlob(blob, 'photo');
-            onCapture(media);
+            onCapture(blob);
             setIsCapturing(false);
           })
           .catch(err => {
@@ -391,7 +186,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
         setIsCapturing(false);
       }
     }, 100);
-  }, [onCapture, createMediaFromBlob, setIsCapturing]);
+  }, [onCapture, setIsCapturing]);
 
   const handleUserMedia = useCallback((stream: MediaStream) => {
     const videoTrack = stream.getVideoTracks()[0];
@@ -487,22 +282,9 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
           });
         }
         
-        if (processedStreamRef.current) {
-          processedStreamRef.current.getTracks().forEach(track => {
-            track.stop();
-          });
-        }
-        
-        // Stop recording if active
-        if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-          console.log('PWA: Stopping active recording');
-          mediaRecorderRef.current.stop();
-        }
-        
         // Reset camera state
         setIsReady(false);
         setMediaStream(null);
-        setIsRecording(false);
       } else if (document.visibilityState === 'visible' && !isReady && !error) {
         console.log('PWA: App came back to foreground, re-initializing camera');
         
@@ -527,22 +309,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
         mediaStream.getTracks().forEach(track => {
           track.stop();
         });
-      }
-      
-      if (processedStreamRef.current) {
-        processedStreamRef.current.getTracks().forEach(track => {
-          track.stop();
-        });
-      }
-      
-      // Stop recording if active
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-      }
-      
-      // Cancel any pending animation frames
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
       }
     };
 
@@ -638,6 +404,12 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
     }, 1000);
   }, []);
 
+  useImperativeHandle(ref, () => ({
+    get video() {
+      return webcamRef.current?.video || null;
+    }
+  }));
+
   return (
     <div className={`relative ${isMobile ? 'space-y-1' : 'flex flex-col h-full space-y-1'}`}>
       {/* Camera Preview */}
@@ -660,13 +432,6 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
           mirrored={isMobile ? facing === 'user' : true}
         />
 
-        {/* Fruit Detection Overlay */}
-        <FruitDetection
-          videoRef={{ current: webcamRef.current?.video || null }}
-          isActive={isFruitDetectionActive}
-          onToggle={() => setIsFruitDetectionActive(!isFruitDetectionActive)}
-          className="absolute inset-0"
-        />
 
         {/* Initial Load Overlay - Shows on first camera load and view switches */}
         {showInitialLoadOverlay && (
@@ -730,7 +495,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
         )}
 
         {/* Capture Flash Effect */}
-        {isCapturing && mode === 'photo' && (
+        {isCapturing && (
           <div className="absolute inset-0 bg-white animate-pulse" style={{ animationDuration: '200ms' }} />
         )}
 
@@ -741,7 +506,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
               <select
                 value={selectedDeviceId}
                 onChange={(e) => setSelectedDeviceId(e.target.value)}
-                disabled={isCapturing || isRecording}
+                disabled={isCapturing}
                 className="appearance-none bg-zinc-900/90 text-gray-100 px-3 py-1.5 pr-8 rounded-xl text-xs backdrop-blur-2xl border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] font-medium shadow-lg focus:outline-none focus:ring-2 focus:ring-[#FF4D00] focus:border-[#FF4D00]"
                 style={{
                   background: 'rgba(24, 24, 27, 0.9)',
@@ -765,153 +530,36 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
           </div>
         )}
 
-        {/* Recording Indicator */}
-        {isRecording && (
-          <div className="absolute top-4 right-4">
-            <div className="flex items-center space-x-2 bg-red-500/90 text-white px-3 py-1.5 rounded-full backdrop-blur-md border border-red-400/30">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium">REC</span>
-            </div>
-          </div>
-        )}
-
-        {/* Mode Selector - Desktop Only (Inside Camera Preview) */}
-        {!isMobile && (
-          <div 
-            className="absolute bottom-6 left-6 bg-zinc-900/90 rounded-2xl p-1 backdrop-blur-xl border border-zinc-700 shadow-lg transition-all duration-200"
-          >
-            <div className="flex space-x-1">
-              <button
-                onClick={() => onModeChange('photo')}
-                disabled={isCapturing || isRecording}
-                className={`px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium ${
-                  mode === 'photo'
-                    ? 'bg-zinc-700 text-gray-100 shadow-lg'
-                    : 'text-zinc-400 hover:text-gray-100 hover:bg-zinc-800'
-                } ${(isCapturing || isRecording) ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Photo
-              </button>
-              <button
-                onClick={() => onModeChange('video')}
-                disabled={isCapturing || isRecording}
-                className={`px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium ${
-                  mode === 'video'
-                    ? 'bg-zinc-700 text-gray-100 shadow-lg'
-                    : 'text-zinc-400 hover:text-gray-100 hover:bg-zinc-800'
-                } ${(isCapturing || isRecording) ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
-                Video
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Capture Controls - Inside camera feed */}
-        {mode === 'photo' && (
-          <div 
-            ref={captureButtonRef}
-            key={mode}
-            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
-            style={{ zIndex: 100 }}
+        <div
+          className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+          style={{ zIndex: 100 }}
+        >
+          <button
+            onClick={capturePhoto}
+            disabled={!isReady || isCapturing}
+            className={`
+              ${isMobile ? 'w-20 h-20' : 'w-20 h-20'} rounded-full border-2 flex items-center justify-center transition-all duration-200 shadow-2xl backdrop-blur-md relative z-50
+              ${!isReady || isCapturing
+                ? 'opacity-50 cursor-not-allowed bg-zinc-700/50 border-white/20'
+                : 'cursor-pointer bg-zinc-700/70 hover:bg-zinc-600/80 hover:scale-105 active:scale-95 border-white/30 hover:border-white/50'
+              }
+            `}
+            style={{
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              zIndex: 100
+            }}
           >
-            <button
-              onClick={capturePhoto}
-              disabled={!isReady || isCapturing}
-              className={`
-                ${isMobile ? 'w-20 h-20' : 'w-20 h-20'} rounded-full border-2 flex items-center justify-center transition-all duration-200 shadow-2xl backdrop-blur-md relative z-50
-                ${!isReady || isCapturing 
-                  ? 'opacity-50 cursor-not-allowed bg-zinc-700/50 border-white/20' 
-                  : 'cursor-pointer bg-zinc-700/70 hover:bg-zinc-600/80 hover:scale-105 active:scale-95 border-white/30 hover:border-white/50'
-                }
-              `}
-              style={{
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                zIndex: 100
-              }}
-            >
-              <Camera className={`${isMobile ? 'h-8 w-8' : 'h-8 w-8'} text-white/80`} />
-            </button>
-          </div>
-        )}
-
-        {mode === 'video' && (
-          <div 
-            ref={captureButtonRef}
-            key={mode}
-            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-50"
-            style={{ zIndex: 100 }}
-          >
-            <button
-              onClick={isRecording ? stopRecording : startRecording}
-              disabled={!isReady}
-              className={`
-                ${isMobile ? 'w-20 h-20' : 'w-20 h-20'} rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl border-2 backdrop-blur-md relative z-50
-                ${isRecording 
-                  ? 'bg-red-500/80 hover:bg-red-600/90 border-white/30 hover:border-white/50' 
-                  : 'bg-zinc-700/70 hover:bg-zinc-600/80 hover:scale-105 border-white/30 hover:border-white/50'
-                }
-                ${!isReady ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              `}
-              style={{
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                zIndex: 100
-              }}
-            >
-              {isRecording ? (
-                <div className={`${isMobile ? 'w-6 h-6' : 'w-6 h-6'} bg-white/80 rounded-sm shadow-sm`} />
-              ) : (
-                <Video className={`${isMobile ? 'h-8 w-8' : 'h-8 w-8'} text-white/80`} />
-              )}
-            </button>
-          </div>
-        )}
+            <Camera className={`${isMobile ? 'h-8 w-8' : 'h-8 w-8'} text-white/80`} />
+          </button>
+        </div>
       </div>
 
       {/* Controls Section - Below camera feed */}
       <div className={`flex items-center justify-center px-6 pt-4 pb-4 ${!isMobile ? 'flex-shrink' : ''}`}>
-        {/* Gallery Button for Mobile - Left */}
-        {isMobile && (
-          <button
-            onClick={onGalleryClick}
-            className="bg-zinc-800/80 text-gray-100 p-4 rounded-full hover:bg-zinc-700 transition-all duration-200 backdrop-blur-xl border border-zinc-700 shadow-lg relative"
-            disabled={isCapturing || isRecording}
-          >
-            <Image className="h-6 w-6" />
-            {capturedMediaCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#FF4D00] text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium shadow-md">
-                {capturedMediaCount}
-              </span>
-            )}
-          </button>
-        )}
-
         {/* Spacer for mobile layout */}
         {isMobile && <div className="flex-1" />}
-
-        {/* Mode Selector - Mobile Center */}
-        {isMobile && (
-          <div className="flex space-x-4">
-            <button
-              onClick={() => onModeChange('photo')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                mode === 'photo' ? 'bg-white text-zinc-900' : 'text-zinc-400'
-              }`}
-            >
-              Photo
-            </button>
-            <button
-              onClick={() => onModeChange('video')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                mode === 'video' ? 'bg-white text-zinc-900' : 'text-zinc-400'
-              }`}
-            >
-              Video
-            </button>
-          </div>
-        )}
 
         {/* Spacer for mobile layout */}
         {isMobile && <div className="flex-1" />}
@@ -921,7 +569,7 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
           <button
             onClick={handleSwitchCameraClick}
             className="bg-zinc-800/80 text-gray-100 p-4 rounded-full hover:bg-zinc-700 transition-all duration-200 backdrop-blur-xl border border-zinc-700 shadow-lg relative z-50"
-            disabled={isCapturing || isRecording}
+            disabled={isCapturing}
             style={{ position: 'relative', zIndex: 50 }}
           >
             <SwitchCamera ref={switchCameraIconRef} className="h-6 w-6" />
@@ -930,4 +578,4 @@ export const CameraPreview: React.FC<CameraPreviewProps> = ({
       </div>
     </div>
   );
-};
+});
