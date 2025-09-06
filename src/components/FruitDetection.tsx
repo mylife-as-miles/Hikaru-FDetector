@@ -2,7 +2,8 @@
  * Fruit Detection Component with Overlay Visualization
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Eye, EyeOff, Settings, AlertCircle, Loader, X } from 'lucide-react';
+import { Eye, EyeOff, Settings, AlertCircle, Loader, X, Apple } from 'lucide-react';
+import { gsap } from 'gsap';
 import { FruitDetectionResult } from '../types/fruitDetection';
 
 interface FruitDetectionProps {
@@ -13,7 +14,7 @@ interface FruitDetectionProps {
   detectionResults: FruitDetectionResult | null;
   error: string | null;
   isProcessing: boolean;
-  detectFruits: (base64Image: string) => Promise<void>;
+  detectFruits: (base64Image: string) => Promise<FruitDetectionResult | null>;
   initializeDetector: (apiKey: string) => void;
   clearResults: () => void;
   isDetectorReady: boolean;
@@ -40,6 +41,8 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const intervalRef = useRef<number | null>(null);
+  const realTimePopupRef = useRef<HTMLDivElement>(null);
+  const detailPopupRef = useRef<HTMLDivElement>(null);
   
   // Get stored API key from localStorage on mount
   useEffect(() => {
@@ -55,6 +58,26 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
       initializeDetector(storedApiKey);
     }
   }, [initializeDetector]);
+
+  // Animation for real-time pop-up
+  useEffect(() => {
+    if (isActive && detectionResults && detectionResults.fruits.length > 0) {
+      gsap.fromTo(realTimePopupRef.current,
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out' }
+      );
+    }
+  }, [isActive, detectionResults]);
+
+  // Animation for detail pop-up
+  useEffect(() => {
+    if (detailPopupResult) {
+      gsap.fromTo(detailPopupRef.current,
+        { scale: 0.9, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: 'power2.out' }
+      );
+    }
+  }, [detailPopupResult]);
 
   // Handle API key submission
   const handleApiKeySubmit = useCallback(() => {
@@ -87,7 +110,7 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
     // Convert to base64
-    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    const base64Image = canvas.toDataURL('image/jpeg', 0.7); // Lowered quality for performance
     
     // Detect fruits
     await detectFruits(base64Image);
@@ -211,15 +234,16 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
       {/* Real-time Detection Pop-up */}
       {isActive && detectionResults && detectionResults.fruits.length > 0 && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-lg border border-zinc-700 rounded-xl p-4 w-11/12 max-w-sm sm:max-w-md shadow-2xl">
+        <div ref={realTimePopupRef} className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-lg border border-zinc-700 rounded-xl p-4 w-11/12 max-w-sm sm:max-w-md shadow-2xl">
           <h3 className="text-white text-center font-bold mb-2">
             Detected Fruits ({detectionResults.fruits.length})
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
             {detectionResults.fruits.map((fruit, index) => (
-              <div key={index} className="text-sm text-zinc-200 bg-zinc-800/50 p-2 rounded-lg text-center">
+              <div key={index} className="text-sm text-zinc-200 bg-zinc-800/50 p-2 rounded-lg text-center flex items-center justify-center gap-2">
+                <Apple className="w-4 h-4 text-green-400" />
                 <span className="font-semibold capitalize">{fruit.name}</span>
-                <span className="text-xs text-zinc-400 ml-2">
+                <span className="text-xs text-zinc-400">
                   ({Math.round(fruit.confidence * 100)}%)
                 </span>
               </div>
@@ -231,7 +255,7 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
       {/* Detail Pop-up on Capture */}
       {detailPopupResult && (
         <div className="absolute inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm sm:max-w-lg shadow-2xl">
+          <div ref={detailPopupRef} className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm sm:max-w-lg shadow-2xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">Detection Results</h2>
               <button
@@ -244,12 +268,15 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
             {detailPopupResult.fruits.length > 0 ? (
               <div className="space-y-3 max-h-[60vh] overflow-y-auto">
                 {detailPopupResult.fruits.map((fruit, index) => (
-                  <div key={index} className="bg-zinc-800 p-4 rounded-lg">
-                    <div className="flex justify-between items-center">
+                  <div key={index} className="bg-zinc-800 p-4 rounded-lg flex items-center gap-4">
+                    <div className="bg-green-500/10 p-2 rounded-full">
+                      <Apple className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div>
                       <span className="text-lg font-semibold capitalize text-white">{fruit.name}</span>
-                      <span className="text-sm font-medium text-green-400">
-                        {Math.round(fruit.confidence * 100)}% confidence
-                      </span>
+                      <p className="text-sm text-zinc-400">
+                        Confidence: {Math.round(fruit.confidence * 100)}%
+                      </p>
                     </div>
                   </div>
                 ))}

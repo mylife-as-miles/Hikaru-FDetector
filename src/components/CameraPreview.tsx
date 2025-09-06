@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import { gsap } from 'gsap';
 import { Camera, SwitchCamera } from 'lucide-react';
 import { useMobileDetection } from '../hooks/useMobileDetection';
-import { CameraMode, CameraFacing, CapturedMedia } from '../types/media';
+import { CameraFacing } from '../types/media';
 
 interface CameraPreviewProps {
   facing: CameraFacing;
