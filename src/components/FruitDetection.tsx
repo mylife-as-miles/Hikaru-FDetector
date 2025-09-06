@@ -211,11 +211,11 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
       {/* Real-time Detection Pop-up */}
       {isActive && detectionResults && detectionResults.fruits.length > 0 && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-lg border border-zinc-700 rounded-xl p-4 w-11/12 max-w-md shadow-2xl">
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-lg border border-zinc-700 rounded-xl p-4 w-11/12 max-w-sm sm:max-w-md shadow-2xl">
           <h3 className="text-white text-center font-bold mb-2">
             Detected Fruits ({detectionResults.fruits.length})
           </h3>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
             {detectionResults.fruits.map((fruit, index) => (
               <div key={index} className="text-sm text-zinc-200 bg-zinc-800/50 p-2 rounded-lg text-center">
                 <span className="font-semibold capitalize">{fruit.name}</span>
@@ -230,8 +230,8 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
       {/* Detail Pop-up on Capture */}
       {detailPopupResult && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-11/12 max-w-lg shadow-2xl">
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl p-6 w-full max-w-sm sm:max-w-lg shadow-2xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">Detection Results</h2>
               <button

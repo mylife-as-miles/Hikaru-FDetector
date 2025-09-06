@@ -159,8 +159,10 @@ function App() {
     reader.readAsDataURL(blob);
     reader.onloadend = async () => {
       const base64data = reader.result as string;
-      await fruitDetection.detectFruits(base64data);
-      setDetailPopupResult(fruitDetection.detectionResults);
+      const results = await fruitDetection.detectFruits(base64data);
+      if (results) {
+        setDetailPopupResult(results);
+      }
     };
   };
 
