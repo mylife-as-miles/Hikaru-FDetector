@@ -36,6 +36,12 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
   // Get stored API key from localStorage on mount
   useEffect(() => {
+    const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (envApiKey) {
+      setApiKey(envApiKey);
+      initializeDetector(envApiKey);
+      return;
+    }
     const storedApiKey = localStorage.getItem('gemini-api-key');
     if (storedApiKey) {
       setApiKey(storedApiKey);
@@ -159,14 +165,16 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
           {isActive ? <Eye size={20} /> : <EyeOff size={20} />}
         </button>
 
-        {/* Settings Toggle */}
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          className="p-3 rounded-full bg-zinc-900/80 backdrop-blur-xl border border-zinc-600 text-zinc-400 hover:text-white hover:scale-105 transition-all"
-          title="Detection Settings"
-        >
-          <Settings size={20} />
-        </button>
+        {/* Settings Toggle (only show if API key is not from env) */}
+        {!import.meta.env.VITE_GEMINI_API_KEY && (
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-3 rounded-full bg-zinc-900/80 backdrop-blur-xl border border-zinc-600 text-zinc-400 hover:text-white hover:scale-105 transition-all"
+            title="Detection Settings"
+          >
+            <Settings size={20} />
+          </button>
+        )}
 
         {/* Processing Indicator */}
         {isProcessing && (
