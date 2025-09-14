@@ -1,6 +1,6 @@
-# Hikaru-FDetector 🎯
+# Hikaru-FruitDetector 🍎
 
-An **advanced face detection application** powered by AI and computer vision technology. Built with React, TypeScript, and modern web APIs for real-time face recognition and analysis.
+An **advanced fruit detection application** powered by AI and computer vision technology. Built with React, TypeScript, and modern web APIs for real-time fruit recognition and analysis.
 
 ## 🚀 Live Demo
 
@@ -12,12 +12,6 @@ An **advanced face detection application** powered by AI and computer vision tec
 
 ## ✨ Key Features
 
-### 🎯 **AI-Powered Face Detection**
-- Real-time face recognition and tracking
-- Advanced facial analysis with ML models
-- Multiple face detection algorithms
-- Robust performance across different lighting conditions
-
 ### 🍎 **AI-Powered Fruit Detection**
 - Real-time fruit identification using Google Gemini Vision
 - Automatic bounding box detection for detected fruits
@@ -27,7 +21,7 @@ An **advanced face detection application** powered by AI and computer vision tec
 ### 📱 **Mobile-First Design**
 - Responsive interface optimized for mobile and desktop
 - PWA capabilities with offline support
-- Dynamic viewport handling for seamless mobile experience
+- Dynamic viewport handling for a seamless mobile experience
 
 ### 📷 **Advanced Camera Functionality**
 - Photo and video capture with high-quality output
@@ -53,15 +47,15 @@ An **advanced face detection application** powered by AI and computer vision tec
 
 ## 🎯 Perfect For
 
-- **Face Recognition Projects** - Ready-to-use face detection for security applications
 - **Fruit Detection & Classification** - AI-powered fruit identification for agriculture and food industry
-- **AI Vision Applications** - Real-time facial analysis and tracking
-- **Educational Tools** - Clean codebase for learning computer vision
+- **AI Vision Applications** - Real-time object detection and analysis
+- **Educational Tools** - Clean codebase for learning computer vision and AI integration
 - **Prototyping** - Quick setup for AI detection proof of concepts
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18 + TypeScript
+- **AI**: Google Gemini Vision API
 - **Styling**: Tailwind CSS with custom animations
 - **Icons**: Lucide React
 - **Animations**: GSAP
@@ -99,7 +93,7 @@ npm run build
    ```
    VITE_GEMINI_API_KEY=your_api_key_here
    ```
-4. The fruit detection feature will be automatically enabled
+4. The fruit detection feature will be automatically enabled.
 
 ## 🚀 Deployment
 
@@ -150,30 +144,29 @@ const videoConstraints = {
 src/
 ├── components/          # React components
 │   ├── CameraPreview.tsx    # Main camera interface
-│   ├── MediaGallery.tsx     # Gallery with thumbnails
-│   └── MediaPreviewModal.tsx # Full-screen viewer
+│   ├── FruitDetection.tsx   # AI fruit detection overlay
+│   └── LoadingScreen.tsx    # Initial loading and permission screen
 ├── hooks/               # Custom React hooks
-│   ├── useMediaCapture.ts   # Media capture logic
+│   ├── useFruitDetection.ts # Fruit detection logic
 │   └── useMobileDetection.ts # Device detection
 ├── utils/               # Utility functions
-│   ├── indexedDb.ts         # Database operations
-│   └── pwa.ts              # PWA management
+│   ├── fruitDetector.ts     # Gemini API interaction
+│   └── indexedDb.ts         # Database operations
 └── types/               # TypeScript definitions
 ```
 
 ### Key Components
 
-- **CameraPreview**: Camera initialization, switching, and capture
-- **MediaGallery**: Media display with thumbnails and batch operations  
-- **MediaPreviewModal**: Full-screen viewing and sharing
-- **useMediaCapture**: Media state management and IndexedDB persistence
-- **useMobileDetection**: Device type detection and responsive behavior
+- **CameraPreview**: Camera initialization, switching, and capture.
+- **FruitDetection**: Handles the real-time detection UI, settings, and results display.
+- **useFruitDetection**: Manages the state and logic for interacting with the fruit detection API.
+- **fruitDetector**: A class that communicates with the Google Gemini API.
 
 ## 🔐 Security & Privacy
 
-- **No external data transmission** - All media stays on device
-- **Local storage only** - IndexedDB for client-side persistence
-- **HTTPS required** - Enforced for camera API access
+- **No external data transmission for media** - Captured images are processed and then discarded unless saved by the user.
+- **Local storage only** - IndexedDB for client-side persistence of media.
+- **HTTPS required** - Enforced for camera API access.
 
 ## 🔧 Development
 
@@ -185,33 +178,6 @@ npm run preview      # Preview production build
 npm run lint         # Run ESLint
 ```
 
-### Integration Examples
-
-#### AI Model Integration
-```typescript
-const processWithAI = async (imageBlob: Blob) => {
-  const formData = new FormData();
-  formData.append('image', imageBlob);
-  
-  const response = await fetch('/api/ai-process', {
-    method: 'POST',
-    body: formData
-  });
-  
-  return response.json();
-};
-```
-
-#### Computer Vision
-```typescript
-const processWithOpenCV = (canvas: HTMLCanvasElement) => {
-  const src = cv.imread(canvas);
-  // Your CV processing here
-  cv.imshow('output', src);
-  src.delete();
-};
-```
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -221,15 +187,16 @@ const processWithOpenCV = (canvas: HTMLCanvasElement) => {
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License
 
 ## 🙏 Acknowledgments
 
 - [React](https://reactjs.org/) - UI library
+- [Google Gemini](https://ai.google.dev/) - AI Model
 - [Tailwind CSS](https://tailwindcss.com/) - Styling framework
 - [GSAP](https://greensock.com/gsap/) - Animation library
 - [Vite](https://vitejs.dev/) - Build tool
 
 ---
 
-*Ready to build camera-powered applications? Star ⭐ this repo and start creating!*
+*Ready to build camera-powered AI applications? Star ⭐ this repo and start creating!*
