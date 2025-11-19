@@ -21,13 +21,16 @@ export class FruitDetector {
   initializeAPI(apiKey: string): void {
     try {
       this.genAI = new GoogleGenerativeAI(apiKey);
+      const modelName = "gemini-2.5-flash";
+      console.log('Initializing Gemini API with model:', modelName);
       this.model = this.genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
+        model: modelName,
         generationConfig: {
           responseMimeType: "application/json"
         }
       });
       this.isInitialized = true;
+      console.log('Gemini API initialized successfully');
     } catch (error) {
       console.error('Failed to initialize Gemini API:', error);
       throw new Error('Failed to initialize Gemini API');
@@ -166,6 +169,7 @@ Only detect actual fruits, not fruit-flavored items, pictures of fruits, or cart
 
     } catch (error) {
       console.error('Fruit detection error:', error);
+      console.error('Model being used:', this.getModelInfo().model);
       
       if (error instanceof SyntaxError) {
         console.error('JSON parsing failed. Response might not be valid JSON.');
@@ -173,8 +177,11 @@ Only detect actual fruits, not fruit-flavored items, pictures of fruits, or cart
       }
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      if (errorMessage.includes('API key')) {
-        throw new FruitDetectionError('Invalid API key or API quota exceeded');
+      if (errorMessage.includes('API key') || errorMessage.includes('404') || errorMessage.includes('not found')) {
+        const modelInfo = this.getModelInfo();
+        throw new FruitDetectionError(
+          `Model "${modelInfo.model}" not found or not available. Please check if the model name is correct and your API has access to it.`
+        );
       }
       
       throw new FruitDetectionError(
