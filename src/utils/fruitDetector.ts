@@ -66,6 +66,26 @@ Only detect actual fruits, not fruit-flavored items, pictures of fruits, or cart
   }
 
   /**
+   * Extract JSON from response text, handling markdown code blocks
+   */
+  private extractJSON(text: string): string {
+    // Try to find JSON in markdown code blocks
+    const jsonBlockMatch = text.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
+    if (jsonBlockMatch) {
+      return jsonBlockMatch[1];
+    }
+    
+    // Try to find JSON object directly
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return jsonMatch[0];
+    }
+    
+    // If no JSON found, return the original text (will fail parsing, but that's expected)
+    return text;
+  }
+
+  /**
    * Preprocess image data for optimal Gemini processing
    */
   private preprocessImage(base64Image: string): { mimeType: string; data: string } {
@@ -111,8 +131,16 @@ Only detect actual fruits, not fruit-flavored items, pictures of fruits, or cart
       const response = await result.response;
       const text = response.text();
       
-      // Parse the JSON response
-      const detectionResult: FruitDetectionResult = JSON.parse(text);
+      // Extract and parse the JSON response (handles markdown code blocks)
+      const jsonText = this.extractJSON(text);
+      
+      // Log for debugging (remove in production if needed)
+      if (import.meta.env.DEV) {
+        console.log('Gemini API response text:', text.substring(0, 200));
+        console.log('Extracted JSON:', jsonText.substring(0, 200));
+      }
+      
+      const detectionResult: FruitDetectionResult = JSON.parse(jsonText);
       
       // Validate the response structure
       if (!detectionResult.fruits || !Array.isArray(detectionResult.fruits)) {
@@ -140,7 +168,8 @@ Only detect actual fruits, not fruit-flavored items, pictures of fruits, or cart
       console.error('Fruit detection error:', error);
       
       if (error instanceof SyntaxError) {
-        throw new FruitDetectionError('Failed to parse detection results');
+        console.error('JSON parsing failed. Response might not be valid JSON.');
+        throw new FruitDetectionError('Failed to parse detection results. The API response was not valid JSON.');
       }
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

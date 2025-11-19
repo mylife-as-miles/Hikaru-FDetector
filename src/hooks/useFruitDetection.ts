@@ -1,7 +1,7 @@
 /**
  * React hook for fruit detection functionality
  */
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { FruitDetector } from '../utils/fruitDetector';
 import { FruitDetectionResult, DetectionStatus, FruitDetectionError } from '../types/fruitDetection';
 
@@ -48,11 +48,11 @@ export const useFruitDetection = (options: UseFruitDetectionOptions = {}): UseFr
   }, []);
   
   // Initialize on mount if API key provided
-  useState(() => {
+  useEffect(() => {
     if (apiKey) {
       initializeDetector(apiKey);
     }
-  });
+  }, [apiKey, initializeDetector]);
   
   // Check if we should process a new frame (debouncing)
   const shouldProcessFrame = useCallback((): boolean => {

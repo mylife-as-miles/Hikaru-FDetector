@@ -90,15 +90,15 @@ export const FruitDetection: React.FC<FruitDetectionProps> = ({
 
   // Capture frame from video and process for real-time detection
   const captureAndDetect = useCallback(async () => {
-    if (!videoRef?.current || !canvasRef.current || !isDetectorReady) {
+    if (!videoRef?.current?.video || !canvasRef.current || !isDetectorReady) {
       return;
     }
 
-    const video = videoRef.current;
+    const video = videoRef.current.video;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    if (!ctx || video.videoWidth === 0 || video.videoHeight === 0) {
+    if (!ctx || !video || video.videoWidth === 0 || video.videoHeight === 0) {
       return;
     }
 
